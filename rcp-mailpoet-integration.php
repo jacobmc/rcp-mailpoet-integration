@@ -1,8 +1,5 @@
 <?php
 // Exit if accessed directly
-
-use MailPoet\Models\Subscriber;
-
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 /**
@@ -16,6 +13,8 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * License: GPL2
  * Copyright 2023 Jacob McKinney
  */
+
+use MailPoet\Models\Subscriber;
 
 if ( is_plugin_active('restrict-content-pro/restrict-content-pro.php') && is_plugin_active('mailpoet/mailpoet.php') ) {
     class RCP_MailPoet_Integration {
@@ -50,6 +49,13 @@ if ( is_plugin_active('restrict-content-pro/restrict-content-pro.php') && is_plu
             add_action( 'rcp_transition_membership_status', array( $this, 'send_membership_status_to_mailpoet' ), 10, 3 );
         }
 
+        /**
+         * Sends membership status to MailPoet
+         *
+         * @param $old_status
+         * @param $new_status
+         * @param $membership_id
+         */
         public function send_membership_status_to_mailpoet( $old_status, $new_status, $membership_id ) {
             $membership = rcp_get_membership( $membership_id );
             $user_id    = $membership->get_user_id();
@@ -59,7 +65,8 @@ if ( is_plugin_active('restrict-content-pro/restrict-content-pro.php') && is_plu
 
             Subscriber::createOrUpdate([
                 'email' => $email,
-                'cf_1' => $membership_level
+                'cf_1'  => $membership_level,
+                'cf_2'  => $new_status
             ]);
         }
 
